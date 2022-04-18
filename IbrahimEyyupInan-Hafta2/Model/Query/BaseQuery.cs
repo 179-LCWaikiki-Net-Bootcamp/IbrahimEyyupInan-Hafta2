@@ -1,6 +1,6 @@
-﻿namespace IbrahimEyyupInan_Hafta2.Model.Dto
+﻿namespace IbrahimEyyupInan_Hafta2.Model.Query
 {
-    public class CategoryViewModel
+    public class BaseQuery
     {
         public int? Id { get; set; }
         public string Name { get; set; }

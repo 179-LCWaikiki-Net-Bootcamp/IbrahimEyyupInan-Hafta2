@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace IbrahimEyyupInan_Hafta2.Contracts.Service
 {
-    public interface BaseService<Entity,View,Dto>
+    public interface IBaseService<Entity,View,Dto>
     {
         public IEnumerable<View> getList();
         public  Task<IEnumerable<View>> getListAsync();

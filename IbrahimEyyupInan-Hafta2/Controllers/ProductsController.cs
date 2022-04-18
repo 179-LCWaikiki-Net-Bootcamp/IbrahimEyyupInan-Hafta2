@@ -10,6 +10,7 @@ using IbrahimEyyupInan_Hafta2.Model;
 using IbrahimEyyupInan_Hafta2.Model.Dto;
 using IbrahimEyyupInan_Hafta2.Contracts.Service;
 using IbrahimEyyupInan_Hafta2.Exceptions;
+using IbrahimEyyupInan_Hafta2.Model.Query;
 
 namespace IbrahimEyyupInan_Hafta2.Controllers
 {
@@ -47,6 +48,14 @@ namespace IbrahimEyyupInan_Hafta2.Controllers
             }
 
             return product;
+        }
+        [HttpGet("search")]
+        public async Task<ActionResult<ProductViewModel>> GetCategoryBySearch([FromQuery] ProductQuery query)
+        {
+
+            IEnumerable<ProductViewModel> val = await _productService.getBySearchAsync(query);
+            return Ok(val);
+
         }
 
         // PUT: api/Products/5

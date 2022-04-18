@@ -3,9 +3,8 @@ using IbrahimEyyupInan_Hafta2.Data;
 using IbrahimEyyupInan_Hafta2.Exceptions;
 using IbrahimEyyupInan_Hafta2.Model;
 using IbrahimEyyupInan_Hafta2.Model.Dto;
-using Microsoft.AspNetCore.Mvc;
+using IbrahimEyyupInan_Hafta2.Model.Query;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +23,6 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
         }
         public IEnumerable<ProductViewModel> getList()
         {
-            //IEnumerable<Product> distinctContext = from s in _context.Product select s;
             return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(_context.Product.Include(e=>e.category).ToList());
         }
 
@@ -33,6 +31,21 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
             IEnumerable<Product> prods = await _context.Product.Include(e => e.category).ToListAsync();
 
             return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(prods);
+        }
+        public IEnumerable<ProductViewModel> getBySearch(ProductQuery query)
+        {
+            IQueryable<Product> queryObj = generateQuery(query);
+            IEnumerable<Product> categories = queryObj.Include(c => c.category).ToList();
+
+            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(categories);
+        }
+
+        public async Task<IEnumerable<ProductViewModel>> getBySearchAsync(ProductQuery query)
+        {
+            IQueryable<Product> queryObj = generateQuery(query);
+            IEnumerable<Product> categories = await queryObj.Include(c => c.category).ToListAsync();
+
+            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductViewModel>>(categories);
         }
 
         public ProductViewModel findById(int id )
@@ -136,6 +149,46 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
         {
             return _context.Product.Any(e => e.Id == id);
         }
+        private IQueryable<Product> generateQuery(ProductQuery query)
+        {
+            IQueryable<Product> productContext = from s in _context.Product select s;
+            if (query.Id != null)
+            {
+                productContext = productContext.Where(e => e.Id == query.Id);
+            }
+            if (query.Name != null)
+            {
+                productContext = productContext.Where(e => e.Name == query.Name);
+            }
+            if (query.sku != null)
+            {
+                productContext = productContext.Where(e => e.sku == query.sku);
+            }
+            if(query.categoryId != null)
+            {
+                productContext = productContext.Where(e => e.category.Id == query.categoryId);
+            }
+            if (query.categoryName != null)
+            {
+                productContext = productContext.Where(e => e.category.Name == query.categoryName);
+            }
+            if(query.priceStart != null)
+            {
+                if (query.priceEnd != null)
+                {
+                    productContext = productContext.Where(e => e.Price>=query.priceStart && e.Price<=query.priceEnd);
+                }
+                else if (query.priceStart < 0)
+                {
+                    productContext = productContext.Where(e=>e.Price<query.priceStart*-1);
+                }
+                else
+                {
+                    productContext = productContext.Where(e => e.Price >= query.priceStart);
+                }
+            }
 
+            return productContext;
+        }
     }
 }
