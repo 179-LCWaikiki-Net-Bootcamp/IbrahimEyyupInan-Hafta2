@@ -8,7 +8,6 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
 {
     public interface IProductService:IBaseService<Product,ProductViewModel,ProductDto>
     {
-        public IEnumerable<ProductViewModel> getBySearch(ProductQuery query);
         public Task<IEnumerable<ProductViewModel>> getBySearchAsync(ProductQuery query);
     }
 }

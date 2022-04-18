@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using IbrahimEyyupInan_Hafta2.Contracts.Repository;
 using IbrahimEyyupInan_Hafta2.Data;
 using IbrahimEyyupInan_Hafta2.Exceptions;
 using IbrahimEyyupInan_Hafta2.Model;
@@ -13,158 +14,62 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
 {
     public class CategoryService : ICategoryService
     {
-        private readonly W2Context _context;
+        private readonly ICategoryRepository _repo;
         private readonly IMapper _mapper;
-        public CategoryService(W2Context context, IMapper mapper)
+        public CategoryService(ICategoryRepository repo, IMapper mapper)
         {
-            _context = context;
+            _repo = repo;
             _mapper = mapper;
         }
 
 
-        public IEnumerable<CategoryViewModel> getList()
-        {
-            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryViewModel>>(_context.Category.ToList());
-        }
-
         public async Task<IEnumerable<CategoryViewModel>> getListAsync()
         {
-            IEnumerable<Category> prods = await _context.Category.ToListAsync();
-
-            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryViewModel>>(prods);
+            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryViewModel>>(await _repo.GetAllAsync());
         }
 
-        public IEnumerable<CategoryViewModel> getBySearch(CategoryQuery query)
-        {
-            IQueryable<Category> queryObj = generateQuery(query);
-            IEnumerable<Category> categories = queryObj.ToList();
 
-            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryViewModel>>(categories);
-        }
 
         public async Task<IEnumerable<CategoryViewModel>> getBySearchAsync(CategoryQuery query)
         {
-            IQueryable<Category> queryObj = generateQuery(query);
-            IEnumerable < Category > categories =await queryObj.ToListAsync();
+            IEnumerable<Category> categories =await  _repo.GetByQueryAsync(query);
 
             return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryViewModel>>(categories);
         }
 
-
-
-        public CategoryViewModel findById(int id)
-        {
-            return _mapper.Map<Category, CategoryViewModel>(_context.Category.Find(id));
-        }
+   
         public async Task<CategoryViewModel> findByIdAsync(int id)
         {
-            Category prod = await _context.Category.FindAsync(id);
-
-            return _mapper.Map<Category, CategoryViewModel>(prod);
+            return _mapper.Map<Category, CategoryViewModel>(await _repo.GetByIdAsync(id));
         }
 
 
-        public CategoryViewModel create(CategoryDto CategoryDto)
-        {
-            Category Category = _mapper.Map<CategoryDto, Category>(CategoryDto);
-            _context.Category.Add(Category);
-            _context.SaveChanges();
-            return _mapper.Map<Category, CategoryViewModel>(Category);
-        }
         public async Task<CategoryViewModel> createAsync(CategoryDto CategoryDto)
         {
             Category Category = _mapper.Map<CategoryDto, Category>(CategoryDto);
-            await _context.Category.AddAsync(Category);
-            await _context.SaveChangesAsync();
+            await _repo.AddAsync(Category);
+
             return _mapper.Map<Category, CategoryViewModel>(Category);
         }
 
-        public void update(int id, CategoryDto CategoryDto)
-        {
-            Category Category = _mapper.Map<CategoryDto, Category>(CategoryDto);
-            _context.Entry(Category).State = EntityState.Modified;
 
-            try
-            {
-                _context.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    throw new NotFoundException();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
 
         public async Task updateAsync(int id, CategoryDto CategoryDto)
         {
             Category Category = _mapper.Map<CategoryDto, Category>(CategoryDto);
-            _context.Entry(Category).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    throw new NotFoundException();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-        }
-        public void delete(int id)
-        {
-            Category Category = _context.Category.Find(id);
-            if (Category == null)
-            {
-                throw new NotFoundException();
-            }
-
-            _context.Category.Remove(Category);
-            _context.SaveChanges();
-
+            await _repo.UpdateAsync(Category);
 
         }
         public async Task deleteAsync(int id)
         {
-            Category Category = await _context.Category.FindAsync(id);
-            if (Category == null)
+            
+            Category category = await _repo.GetByIdAsync(id);
+            if (category == null)
             {
                 throw new NotFoundException();
             }
-
-            _context.Category.Remove(Category);
-            await _context.SaveChangesAsync();
+            await _repo.DeleteAsync(category);
         }
 
-        private bool CategoryExists(int id)
-        {
-            return _context.Category.Any(e => e.Id == id);
-        }
-        private IQueryable<Category> generateQuery(CategoryQuery query)
-        {
-            IQueryable<Category> categoryContext = from s in _context.Category select s;
-            if (query.Id != null)
-            {
-                categoryContext= categoryContext.Where(e=>e.Id==query.Id);
-            }
-            if(query.Name != null)
-            {
-                categoryContext = categoryContext.Where(e => e.Name == query.Name);
-            }
-
-            return categoryContext;
-        }
     }
 }

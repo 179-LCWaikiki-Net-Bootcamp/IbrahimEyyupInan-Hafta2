@@ -16,6 +16,8 @@ using IbrahimEyyupInan_Hafta2.Data;
 using AutoMapper;
 using IbrahimEyyupInan_Hafta2.Model.Profiles;
 using IbrahimEyyupInan_Hafta2.Contracts.Service;
+using IbrahimEyyupInan_Hafta2.Contracts.Repository;
+using IbrahimEyyupInan_Hafta2.Contracts.Repository.Impl;
 
 namespace IbrahimEyyupInan_Hafta2
 {
@@ -49,8 +51,11 @@ namespace IbrahimEyyupInan_Hafta2
 
 
             IMapper mapper = mapperConfig.CreateMapper();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
+            
             services.AddSingleton(mapper);
         }
 
