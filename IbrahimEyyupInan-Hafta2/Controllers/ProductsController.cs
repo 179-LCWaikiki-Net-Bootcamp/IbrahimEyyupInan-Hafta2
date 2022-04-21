@@ -61,7 +61,7 @@ namespace IbrahimEyyupInan_Hafta2.Controllers
         // PUT: api/Products/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(int id, ProductDto product)
+        public async Task<IActionResult> PutProduct(int id, ProductUpdationDto product)
         {
             if (id != product.Id)
             {
@@ -87,7 +87,7 @@ namespace IbrahimEyyupInan_Hafta2.Controllers
         // POST: api/Products
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProductViewModel>> PostProduct(ProductDto product)
+        public async Task<ActionResult<ProductViewModel>> PostProduct(ProductCreationDto product)
         {
             ProductViewModel model = await _productService.createAsync(product);
 

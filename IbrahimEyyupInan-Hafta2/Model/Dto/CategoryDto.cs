@@ -3,7 +3,6 @@
     public class CategoryDto
     {
         // dışarıdan gelecek veri olarak tanımlanmıştır
-        public int? Id { get; set; }
         public string Name { get; set; }
 
     }

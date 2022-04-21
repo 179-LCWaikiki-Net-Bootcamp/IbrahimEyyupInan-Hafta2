@@ -18,6 +18,8 @@ using IbrahimEyyupInan_Hafta2.Model.Profiles;
 using IbrahimEyyupInan_Hafta2.Contracts.Service;
 using IbrahimEyyupInan_Hafta2.Contracts.Repository;
 using IbrahimEyyupInan_Hafta2.Contracts.Repository.Impl;
+using FluentValidation.AspNetCore;
+using IbrahimEyyupInan_Hafta2.Validator;
 
 namespace IbrahimEyyupInan_Hafta2
 {
@@ -47,6 +49,11 @@ namespace IbrahimEyyupInan_Hafta2
             {
                 mc.AddProfile(new CategoryProfile());
                 mc.AddProfile(new ProductProfile());
+            });
+            services.AddControllers().AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<ProductCreationDtoValidator>();
+                fv.RegisterValidatorsFromAssemblyContaining<ProductUpdationDtoValidator>();
             });
 
 

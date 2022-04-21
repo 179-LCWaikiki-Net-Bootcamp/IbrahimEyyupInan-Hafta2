@@ -12,11 +12,12 @@ namespace IbrahimEyyupInan_Hafta2.Model.Profiles
                 .ForMember(d => d.categoryName,
                     opt => opt.MapFrom(src => src.category.Name)
                 ); ;
+            CreateMap<ProductCreationDto, Product>()
+                .ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
+            CreateMap<ProductUpdationDto, Product>()
+                .ForAllMembers(opts => opts.Condition((src, dest, member) => member != null));
 
-            CreateMap<ProductViewModel, Product>();
 
-            CreateMap<Product, ProductDto>();
-            CreateMap<ProductDto, Product>();
 
         }
     }

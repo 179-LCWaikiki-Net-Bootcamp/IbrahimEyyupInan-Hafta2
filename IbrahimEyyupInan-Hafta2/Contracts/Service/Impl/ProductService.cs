@@ -19,6 +19,8 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
     {
         private readonly IProductRepository _repo;
         private readonly IMapper _mapper;
+        // buradaki includes category id ve category name değerlerini çekebilmek için category objesini 
+        // çekilen dataya dahil etmek için generic koda parametre olarak veriliyor.
         private List<Expression<Func<Product, object>>> includes = new List<Expression<Func<Product, object>>>()
             {
                 (e=>e.category)
@@ -50,18 +52,25 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
 
 
 
-        public async Task<ProductViewModel> createAsync(ProductDto productDto)
+        public async Task<ProductViewModel> createAsync(ProductCreationDto productDto)
         {
-            Product product = _mapper.Map<ProductDto, Product>(productDto);
+            // product map ile dönüştürülüp kaydediliyor. Daha sonrasında ViewModel'e dönüştürülüp cevap olarak gönderilmek üzere
+            // return ediliyor.
+            Product product = _mapper.Map<ProductCreationDto, Product>(productDto);
             await _repo.AddAsync(product);
             return _mapper.Map<Product, ProductViewModel>(product);
         }
 
 
 
-        public async Task updateAsync(int id , ProductDto productDto)
+        public async Task updateAsync(int id , ProductUpdationDto productDto)
         {
-            Product product = _mapper.Map<ProductDto, Product>(productDto);
+            // verilen id ile ilgili bir product bulunuyor mu diye kontrol ediyor. Eğer bulunamazsa zaten NotFound Exception'u üretiliyor
+            // ve en yukarıdaki fonksiyon bu exception'u yakalayıp notFound cevabu dönüyor.
+            // burada var olan datayı çekmemizin nedeni autoMapper'ın gelen data'daki null verilerin yerine bize var olan 
+            // verileri vermesini sağlamak
+            Product existingProd = await _repo.GetByIdAsync(id,includes);
+            Product product = _mapper.Map(productDto, existingProd);
             await _repo.UpdateAsync(product);
              
         }

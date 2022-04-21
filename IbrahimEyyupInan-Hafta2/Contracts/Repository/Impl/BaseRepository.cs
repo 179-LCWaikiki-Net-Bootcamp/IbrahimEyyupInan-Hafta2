@@ -21,6 +21,8 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Repository.Impl
 
         public async Task<IEnumerable<T>> GetAllAsync(List<Expression<Func<T, object>>> includes = null)
         {
+            // buradaki inludes ifadesi bir entity'nin child entity'lerinin çekilecek veriye dahil edilip edilmeyeceğini ifade eden 
+            // expression'lar içerir. 
             IQueryable<T> query = _context.Set<T>();
             if (includes != null) query = includes.Aggregate(query, (current, include) => current.Include(include));
             return await query.ToListAsync();

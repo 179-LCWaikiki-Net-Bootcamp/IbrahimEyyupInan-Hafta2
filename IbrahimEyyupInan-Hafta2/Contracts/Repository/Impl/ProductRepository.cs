@@ -26,6 +26,7 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Repository.Impl
         }
         private IQueryable<Product> generateQuery(ProductQuery query)
         {
+            // bu kod query oluşturmaktan sorumludur. Verilen query objesinin içerisindeki verilere göre IQueryable objesi oluşturulur
             IQueryable<Product> productContext = from s in _context.Product select s;
             if (query.Id != null)
             {

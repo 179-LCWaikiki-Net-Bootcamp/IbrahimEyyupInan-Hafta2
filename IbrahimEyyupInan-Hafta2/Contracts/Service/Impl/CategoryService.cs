@@ -46,6 +46,8 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
 
         public async Task<CategoryViewModel> createAsync(CategoryDto CategoryDto)
         {
+            // product map ile dönüştürülüp kaydediliyor. Daha sonrasında ViewModel'e dönüştürülüp cevap olarak gönderilmek üzere
+            // return ediliyor.
             Category Category = _mapper.Map<CategoryDto, Category>(CategoryDto);
             await _repo.AddAsync(Category);
 
@@ -56,7 +58,14 @@ namespace IbrahimEyyupInan_Hafta2.Contracts.Service
 
         public async Task updateAsync(int id, CategoryDto CategoryDto)
         {
-            Category Category = _mapper.Map<CategoryDto, Category>(CategoryDto);
+            // verilen id ile ilgili bir product bulunuyor mu diye kontrol ediyor. Eğer bulunamazsa zaten NotFound Exception'u üretiliyor
+            // ve en yukarıdaki fonksiyon bu exception'u yakalayıp notFound cevabu dönüyor.
+            // burada var olan datayı çekmemizin nedeni autoMapper'ın gelen data'daki null verilerin yerine bize var olan 
+            // verileri vermesini sağlamak
+            Category ExistingCategory = await _repo.GetByIdAsync(id);
+
+            Category Category = _mapper.Map(CategoryDto, ExistingCategory);
+            
             await _repo.UpdateAsync(Category);
 
         }

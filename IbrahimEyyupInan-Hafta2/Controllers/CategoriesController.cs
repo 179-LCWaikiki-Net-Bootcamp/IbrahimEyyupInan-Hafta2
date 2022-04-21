@@ -59,10 +59,7 @@ namespace IbrahimEyyupInan_Hafta2.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(int id, CategoryDto category)
         {
-            if (id != category.Id)
-            {
-                return BadRequest();
-            }
+            
 
             try
             {
